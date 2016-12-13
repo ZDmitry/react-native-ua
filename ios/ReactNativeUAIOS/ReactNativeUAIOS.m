@@ -19,9 +19,7 @@ static PushHandler *pushHandler = nil;
 }
 
 + (void)setupUrbanAirship:(NSDictionary *) launchOptions {
-    UAConfig *config = [UAConfig defaultConfig];
-
-    [UAirship takeOff:config];
+    [UAirship takeOff:[UAConfig defaultConfig]];
 
     pushHandler = [[PushHandler alloc] init];
     [UAirship push].pushNotificationDelegate = pushHandler;
@@ -56,28 +54,13 @@ RCT_EXPORT_METHOD(enableNotification) {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
     [UAirship push].userPushNotificationsEnabled = YES;
-
-    if ([defaults objectForKey:@"first_time_notification_enable"]) {
-
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
-
-    } else {
-
-        [defaults setBool:YES forKey:@"first_time_notification_enable"];
-        [defaults synchronize];
-
-    }
 }
 
 RCT_EXPORT_METHOD(disableNotification) {
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0) {
-
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
-
     } else {
-
         [UAirship push].userPushNotificationsEnabled = NO;
-
     }
 }
 
@@ -99,11 +82,12 @@ RCT_EXPORT_METHOD(handleBackgroundNotification) {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
     if ([defaults objectForKey:@"push_notification_opened_from_background"]) {
-
         NSDictionary *notification = [defaults objectForKey:@"push_notification_opened_from_background"];
 
-        [[ReactNativeUAIOS getInstance] dispatchEvent:@"receivedNotification" body:@{@"event": @"launchedFromNotification",
-                                                                                     @"data": notification}];
+        [[ReactNativeUAIOS getInstance] dispatchEvent:@"receivedNotification" body:@{
+            @"event": @"launchedFromNotification",
+            @"data": notification
+        }];
 
         [defaults removeObjectForKey:@"push_notification_opened_from_background"];
     }
