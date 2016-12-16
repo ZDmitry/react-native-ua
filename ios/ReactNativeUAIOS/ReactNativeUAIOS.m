@@ -142,7 +142,13 @@ RCT_EXPORT_METHOD(setQuietTimeEnabled:(nonnull NSNumber *)enabled) {
 
 RCT_EXPORT_METHOD(areNotificationsEnabled:(RCTResponseSenderBlock)callback) {
     BOOL enabled = [UAirship push].authorizedNotificationOptions != 0;
-    callback(@[ @(enabled) ]);
+    NSString* channelId = [UAirship push].channelID;
+
+    callback(@[ @{
+        @"enabled":   @(enabled),
+        @"channelId": channelId,
+        @"platform":  @"iphoneos"
+    } ]);
 }
 
 @end
