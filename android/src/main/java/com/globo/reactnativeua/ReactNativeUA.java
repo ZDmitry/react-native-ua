@@ -6,16 +6,22 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import java.util.Date;
+
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+
 import java.util.Locale;
+import java.util.Date;
+import java.lang.String;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+
 import com.urbanairship.Autopilot;
 import com.urbanairship.UAirship;
 import com.urbanairship.push.notifications.DefaultNotificationFactory;
@@ -75,8 +81,16 @@ public class ReactNativeUA extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void areNotificationsEnabled(Callback callback) {
-        Boolean enabled = UAirship.shared().getPushManager().isOptIn();
-        callback.invoke(enabled);
+        Boolean enabled  = UAirship.shared().getPushManager().isOptIn();
+        String channelId = UAirship.shared().getPushManager().getChannelId();
+
+        WritableMap payload = Arguments.createMap();
+
+        payload.putBoolean("enabled",  enabled);
+        payload.putString("channelId", channelId);
+        payload.putString("platform",  "android");
+
+        callback.invoke(payload);
     }
 
     @ReactMethod
